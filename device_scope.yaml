@@ -1,0 +1,85 @@
+# Device Scope Configuration
+# Defines which devices the NOC Pre-Triage Agent is authorized to query.
+# Devices NOT in this list will be rejected by the command broker.
+#
+# tiers:
+#   access      - access layer switches (default allowed)
+#   distribution - distribution switches (requires explicit allow)
+#   core        - core routers/switches (blocked by default)
+#   firewall    - firewalls (blocked by default)
+#   wireless    - wireless controllers/APs (allowed for read-only AP checks)
+#
+# allowed_in_triage: true  = agent may run health checks
+# allowed_in_triage: false = agent will note the device but SKIP health checks
+
+version: "1.0"
+
+device_groups:
+  access_switches:
+    tier: access
+    allowed_in_triage: true
+    devices:
+      - hostname: "access-sw-01"
+        site: "HQ"
+        platform: "ios"
+      - hostname: "access-sw-02"
+        site: "HQ"
+        platform: "ios"
+      - hostname: "access-sw-22"
+        site: "HQ"
+        platform: "ios"
+      - hostname: "access-sw-23"
+        site: "HQ"
+        platform: "ios"
+      - hostname: "branch-sw-01"
+        site: "Branch-A"
+        platform: "ios"
+      - hostname: "branch-sw-02"
+        site: "Branch-B"
+        platform: "ios"
+
+  distribution_switches:
+    tier: distribution
+    allowed_in_triage: false   # Must be explicitly set to true per device below
+    devices:
+      - hostname: "dist-sw-01"
+        site: "HQ"
+        platform: "nxos"
+        allowed_in_triage: true    # Override: this dist switch is approved
+      - hostname: "dist-sw-02"
+        site: "HQ"
+        platform: "nxos"
+        allowed_in_triage: false
+
+  core_routers:
+    tier: core
+    allowed_in_triage: false   # Core devices are NEVER touched by the agent
+    devices:
+      - hostname: "core-rtr-01"
+        site: "HQ"
+        platform: "ios-xe"
+      - hostname: "core-rtr-02"
+        site: "HQ"
+        platform: "ios-xe"
+
+  firewalls:
+    tier: firewall
+    allowed_in_triage: false
+    devices:
+      - hostname: "fw-01"
+        site: "HQ"
+        platform: "asa"
+
+  wireless:
+    tier: wireless
+    allowed_in_triage: true
+    devices:
+      - hostname: "wlc-01"
+        site: "HQ"
+        platform: "aireos"
+
+# Mock devices for --mock mode testing
+mock_devices:
+  - hostname: "access-sw-22"
+    platform: "ios"
+    site: "HQ"

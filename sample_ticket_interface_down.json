@@ -1,0 +1,10 @@
+{
+  "ticket_id": "INC12345",
+  "source": "SolarWinds",
+  "severity": "Medium",
+  "alert": "Interface Down",
+  "device": "access-sw-22",
+  "interface": "Gi1/0/14",
+  "description": "Interface Gi1/0/14 is down on access-sw-22",
+  "created_at": "2026-04-24T10:15:00"
+}

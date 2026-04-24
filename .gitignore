@@ -1,0 +1,28 @@
+# Environment
+.env
+venv/
+.venv/
+
+# Chroma persistent store (rebuild from runbooks/ anytime)
+chroma_db/
+
+# Audit logs (sensitive — manage separately)
+logs/
+
+# Generated triage notes
+outputs/
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.egg-info/
+dist/
+build/
+.pytest_cache/
+.coverage
+htmlcov/
+
+# OS
+.DS_Store
+Thumbs.db

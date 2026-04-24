@@ -1,0 +1,165 @@
+# Ticket Type Configuration
+# Maps incoming alert types to:
+#   - runbook file(s) to retrieve from RAG
+#   - health check set to execute
+#   - required fields to extract from ticket
+
+version: "1.0"
+
+ticket_types:
+
+  interface_down:
+    aliases:
+      - "Interface Down"
+      - "Link Down"
+      - "Port Down"
+      - "Interface Flap"
+    runbook: "interface_down.md"
+    required_fields:
+      - device
+      - interface
+    health_checks:
+      - show_version
+      - show_clock
+      - show_interface
+      - show_interface_status
+      - show_interface_counters_errors
+      - show_running_config_interface
+      - show_logging
+      - show_cdp_neighbors
+      - show_power_inline
+      - show_mac_address_table
+
+  bgp_down:
+    aliases:
+      - "BGP Neighbor Down"
+      - "BGP Session Down"
+      - "BGP Peer Down"
+    runbook: "bgp_neighbor_down.md"
+    required_fields:
+      - device
+      - ip
+    health_checks:
+      - show_version
+      - show_clock
+      - show_ip_bgp_summary
+      - show_ip_route
+      - show_logging
+      - show_ip_interface_brief
+
+  ospf_down:
+    aliases:
+      - "OSPF Neighbor Down"
+      - "OSPF Adjacency Down"
+    runbook: "ospf_neighbor_down.md"
+    required_fields:
+      - device
+    health_checks:
+      - show_version
+      - show_clock
+      - show_ip_ospf_neighbor
+      - show_ip_route
+      - show_logging
+      - show_ip_interface_brief
+
+  high_cpu:
+    aliases:
+      - "High CPU"
+      - "CPU Threshold Exceeded"
+      - "CPU Utilization High"
+    runbook: "high_cpu.md"
+    required_fields:
+      - device
+    health_checks:
+      - show_version
+      - show_clock
+      - show_processes_cpu
+      - show_processes_memory
+      - show_logging
+      - show_environment
+
+  vlan_issue:
+    aliases:
+      - "VLAN Issue"
+      - "VLAN Not Found"
+      - "VLAN Mismatch"
+    runbook: "vlan_issue.md"
+    required_fields:
+      - device
+      - vlan
+    health_checks:
+      - show_version
+      - show_clock
+      - show_vlan_brief
+      - show_interface_status
+      - show_logging
+
+  stp_issue:
+    aliases:
+      - "Spanning Tree Issue"
+      - "STP Topology Change"
+      - "STP Loop"
+      - "TCN"
+    runbook: "stp_issue.md"
+    required_fields:
+      - device
+    health_checks:
+      - show_version
+      - show_clock
+      - show_spanning_tree
+      - show_logging
+      - show_interface_status
+
+  hsrp_issue:
+    aliases:
+      - "HSRP State Change"
+      - "HSRP Failover"
+      - "HSRP Active Change"
+    runbook: "hsrp_issue.md"
+    required_fields:
+      - device
+    health_checks:
+      - show_version
+      - show_clock
+      - show_standby_brief
+      - show_ip_interface_brief
+      - show_logging
+
+  switch_stack:
+    aliases:
+      - "Stack Member Down"
+      - "Switch Stack Issue"
+      - "Stack Partial Ring"
+    runbook: "switch_stack_issue.md"
+    required_fields:
+      - device
+    health_checks:
+      - show_version
+      - show_clock
+      - show_environment
+      - show_logging
+      - show_interfaces_status
+
+  wireless_ap_down:
+    aliases:
+      - "AP Down"
+      - "Wireless AP Down"
+      - "Access Point Offline"
+    runbook: "wireless_ap_down.md"
+    required_fields:
+      - device
+    health_checks:
+      - show_version
+      - show_clock
+      - show_logging
+      - show_ip_interface_brief
+
+  unknown:
+    aliases: []
+    runbook: null
+    required_fields:
+      - device
+    health_checks:
+      - show_version
+      - show_clock
+      - show_logging

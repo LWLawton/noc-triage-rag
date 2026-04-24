@@ -1,0 +1,64 @@
+# Allowed read-only command templates for NOC Pre-Triage Agent
+# Commands are matched as exact strings or parameterized templates.
+# Parameters are validated separately via regex before substitution.
+
+version: "1.0"
+
+commands:
+  # Terminal/session setup
+  - "terminal length 0"
+  - "terminal width 0"
+
+  # System info
+  - "show version"
+  - "show clock"
+  - "show inventory"
+  - "show environment all"
+
+  # Interface commands (require valid interface param)
+  - "show interface {interface}"
+  - "show interface {interface} status"
+  - "show interface {interface} counters errors"
+  - "show running-config interface {interface}"
+  - "show interfaces status"
+  - "show ip interface brief"
+  - "show mac address-table interface {interface}"
+  - "show power inline"
+  - "show power inline {interface}"
+
+  # VLAN / STP
+  - "show vlan brief"
+  - "show spanning-tree vlan {vlan}"
+  - "show spanning-tree interface {interface} detail"
+  - "show etherchannel summary"
+
+  # CDP / LLDP
+  - "show cdp neighbors detail"
+  - "show lldp neighbors detail"
+
+  # Logging / CPU / Memory
+  - "show logging last 100"
+  - "show processes cpu sorted"
+  - "show processes memory sorted"
+
+  # Routing
+  - "show ip route"
+  - "show ip route {ip}"
+  - "show ip ospf neighbor"
+  - "show ip bgp summary"
+
+  # HSRP
+  - "show standby brief"
+
+  # ARP
+  - "show arp"
+
+  # Connectivity (use sparingly - logged and rate-limited)
+  - "ping {ip}"
+  - "traceroute {ip}"
+
+# Maximum commands per ticket run
+max_commands_per_ticket: 15
+
+# Rate limiting: max commands per device per minute
+rate_limit_per_device_per_minute: 20

@@ -1,0 +1,118 @@
+# Safety Policy Configuration
+# Global safety enforcement rules for the NOC Pre-Triage Agent.
+# These are enforced by safety.py and command_broker.py.
+
+version: "1.0"
+
+general:
+  # Absolute maximum commands per ticket, regardless of ticket type config
+  hard_max_commands_per_ticket: 20
+
+  # Block core/distribution devices unless explicitly allowed in device_scope.yaml
+  block_core_devices_by_default: true
+  block_distribution_devices_by_default: true
+  block_firewall_devices_by_default: true
+
+  # If device is not found in device_scope.yaml, block it
+  block_unknown_devices: true
+
+  # Never allow commands against devices outside approved scope
+  enforce_device_scope: true
+
+credential_safety:
+  # If any of these strings appear in a command or output, redact/block immediately
+  forbidden_strings:
+    - "password"
+    - "secret"
+    - "key"
+    - "token"
+    - "credential"
+    - "username"
+    - "enable"
+    - "tacacs"
+    - "radius"
+
+  # Patterns to redact from outputs before passing to LLM
+  redact_patterns:
+    - pattern: "password\\s+\\S+"
+      replacement: "password [REDACTED]"
+    - pattern: "secret\\s+\\S+"
+      replacement: "secret [REDACTED]"
+    - pattern: "username\\s+\\S+\\s+password\\s+\\S+"
+      replacement: "[CREDENTIAL LINE REDACTED]"
+    - pattern: "(\\d{1,3}\\.){3}\\d{1,3}"
+      replacement: "[IP]"
+      apply_to_triage_note: false   # Only redact IPs in logs, not in triage note
+
+command_validation:
+  # Patterns that ALWAYS cause command rejection regardless of allow-list
+  forbidden_patterns:
+    - "conf t"         # shorthand for configure terminal
+    - "configure terminal"
+    - "configure"      # any remaining configure variant
+    - "reload"
+    - "write"
+    - "copy"
+    - "delete"
+    - "erase"
+    - "format"
+    - "clear"
+    - "debug"
+    - "shutdown"
+    - "no shut"
+    - "no shutdown"
+    - "username"
+    - "enable secret"
+    - "crypto"
+    - "archive"
+    - "boot"
+    - "install"
+    - "request platform"
+    - "redundancy"
+    - "power cycle"
+    - ";"             # command chaining
+    - "|"             # pipe to file/redirect
+    - ">"             # redirect
+    - "tee"
+    - "shell"
+    - "bash"
+    - "python"
+    - "tcl"
+
+interface_validation:
+  # Valid interface name patterns (Cisco IOS / NX-OS)
+  allowed_patterns:
+    - "^(Gi|GigabitEthernet)\\d+(/\\d+)*/\\d+$"
+    - "^(Te|TenGigabitEthernet)\\d+(/\\d+)*/\\d+$"
+    - "^(Fa|FastEthernet)\\d+(/\\d+)*/\\d+$"
+    - "^(Lo|Loopback)\\d+$"
+    - "^(Vl|Vlan)\\d+$"
+    - "^(Po|Port-channel)\\d+$"
+    - "^(Se|Serial)\\d+(/\\d+)*/\\d+$"
+    - "^Ethernet\\d+(/\\d+)*/\\d+$"   # NX-OS
+
+ip_validation:
+  # Only valid IPv4 unicast (no multicast, loopback, broadcast)
+  allow_multicast: false
+  allow_loopback: false
+  allow_broadcast: false
+
+vlan_validation:
+  min_vlan: 1
+  max_vlan: 4094
+
+audit:
+  # Audit log path (relative to project root)
+  log_path: "logs/audit.jsonl"
+
+  # Log these event types
+  log_events:
+    - ticket_loaded
+    - device_scope_check
+    - command_validated
+    - command_blocked
+    - command_executed
+    - rag_query
+    - llm_query
+    - triage_note_generated
+    - error
